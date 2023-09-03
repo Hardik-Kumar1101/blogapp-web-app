@@ -28,6 +28,12 @@ public class SecurityConfig {
 
         http.authorizeRequests(configure ->
                 configure
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/posts").hasAnyRole("USER","ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/posts/**").hasAnyRole("USER","ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/posts/**").hasAnyRole("USER","ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/posts/**").hasAnyRole("USER","ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/posts/**").hasAnyRole("ADMIN")
                         .anyRequest().permitAll()
 
         ).formLogin(
@@ -45,9 +51,10 @@ public class SecurityConfig {
         ).exceptionHandling(configure -> configure
                 .accessDeniedPage("/access-denied")
 
-        ).csrf(csrf -> csrf.disable());
+        );
+
+        http.httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
-
 }
